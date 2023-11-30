@@ -1,93 +1,77 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<header>
+<script src="d3.min.js"></script>
+<script src="plot.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script> -->
+</header>
 
-.links line {
-  stroke: #999;
-  stroke-opacity: 0.6;
-}
+<body>
+<div id="myplot"></div>
+<div id="myplot2"></div>
 
-.nodes circle {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
+<script type="module">
+const data = await d3.csv("market-stock.csv", (row) => {
+    return {
+        time: new Date(row.time),
+        resource: row.resource,
+        ammount: +row.ammount
+    }
+})
+console.log(data)
+const div = document.querySelector("#myplot");
+const div2 = document.querySelector("#myplot2");
 
-</style>
-<svg width="960" height="600"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script>
+const plot  = Plot.plot({
+  x: {axis: null},
+  y: {tickFormat: "s", grid: true},
+  color: {scheme: "spectral", legend: true},
+  marks: [
+    Plot.barY(data, {
+      x: "resource",
+      y: "ammount",
+      fill: "resource",
+      fx: "time",
+      sort: {x: null, color: null, fx: {value: "-y", reduce: "sum"}},
+      tip: true
+    }),
+    Plot.ruleY([0])
+  ]
+})
 
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
 
-var color = d3.scaleOrdinal(d3.schemeCategory20);
+const plot2  = Plot.plot({
+    grid: true,
+    nice: true,
+  marks: [
+    Plot.ruleY([0]),
+    Plot.lineY(data, {x: "time", y: "ammount", stroke: "resource", tip: "x"}),
+    Plot.text(data, Plot.selectLast({x: "time", y: "ammount", z: "resource", text: "resource", textAnchor: "start", dx: 3})),
+    Plot.axisX(),
+    Plot.axisY({ticks: 50, text: null, tickSize: 3}),   
+    Plot.axisY()
 
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
+  ]
+})
 
-d3.json("data.json", function(error, graph) {
-  if (error) throw error;
 
-  var link = svg.append("g")
-      .attr("class", "links")
-    .selectAll("line")
-    .data(graph.links)
-    .enter().append("line")
-      .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-  var node = svg.append("g")
-      .attr("class", "nodes")
-    .selectAll("circle")
-    .data(graph.nodes)
-    .enter().append("circle")
-      .attr("r", 5)
-      .attr("fill", function(d) { return color(d.group); })
-      .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
 
-  node.append("title")
-      .text(function(d) { return d.id; });
 
-  simulation
-      .nodes(graph.nodes)
-      .on("tick", ticked);
 
-  simulation.force("link")
-      .links(graph.links);
 
-  function ticked() {
-    link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-  }
-});
-
-function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
-}
-
-function dragged(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-}
-
-function dragended(d) {
-  if (!d3.event.active) simulation.alphaTarget(0);
-  d.fx = null;
-  d.fy = null;
-}
+div.append(plot);
+div2.append(plot2);
 
 </script>
+
+
+
+
+
+
+
+
+
+
+</body>
