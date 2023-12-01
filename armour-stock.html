@@ -14,22 +14,39 @@
       <div class="container">
         <header class="d-flex justify-content-center py-3">
           <ul class="nav nav-pills">
-            <li class="nav-item"> <a href="." class="nav-link active" aria-current="page" >Market Stock📦</a > </li>
-            <li class="nav-item"> <a href="stable-stock.html" class="nav-link">Stables Stocks🐴</a></li>
-            <li class="nav-item"><a href="weapon-stock.html" class="nav-link">Weapon Stock⚔️</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+            <li class="nav-item">
+              <a href="." class="nav-link">Market Stock📦</a>
+            </li>
+            <li class="nav-item">
+              <a href="stable-stock.html" class="nav-link" aria-current="page"
+                >Stables Stocks🐴</a
+              >
+            </li>
+            <li class="nav-item">
+              <a href="weapon-stock.html" class="nav-link">Weapon Stock⚔️</a>
+            </li>
+            <li class="nav-item">
+              <a href="armour-stock.html" class="nav-link active"
+                >️Armour Stock🛡️</a
+              >
+            </li>
           </ul>
         </header>
       </div>
     </main>
+    <div class="container">
+      <div class="py-5 text-center">
+        <h1>Work in Progress no data</h1>
+      </div>
+    </div>
     <div class="container">
       <div id="myplot"></div>
       <div id="myplot2"></div>
     </div>
 
     <script type="module">
-      const data = await d3.csv("stocks/market-stock.csv", (row) => {
+      return;
+      const data = await d3.csv("stocks/armour-stock.csv", (row) => {
         return {
           time: new Date(row.time),
           resource: row.resource,
@@ -69,7 +86,7 @@
             fontWeight: 600,
             textAnchor: "start",
             dx: 3,
-            fill: "white",
+            fill: "black",
           }),
         ],
       });
@@ -78,6 +95,7 @@
         grid: true,
         nice: true,
         color: { scheme: "category10", legend: false },
+        marginRight: 100,
 
         marks: [
           Plot.ruleY([0]),
